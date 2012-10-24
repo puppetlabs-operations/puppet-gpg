@@ -30,6 +30,8 @@ class gpg (
   $gpgme_provider = 'gem'
 ) {
 
+  include ruby::dev
+
   package { 'gnupg':
     name    => $packagename,
     ensure  => 'installed',
@@ -38,6 +40,9 @@ class gpg (
   package { 'gpgme':
     ensure    => 'installed',
     provider  => $gpgme_provider,
-    require   => Package['gnupg']
+    require   => [
+      Package['gnupg'],
+      Class['ruby::dev'],
+    ]
   }
 }
