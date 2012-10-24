@@ -1,5 +1,10 @@
-Puppet::Type.type(:gpgkey).provide(:gpgme) do
+begin
   require 'gpgme'
+rescue LoadError => e
+  Puppet.warning "Error while loading #{__FILE__}: #{e}; deferring require"
+end
+
+Puppet::Type.type(:gpgkey).provide(:gpgme) do
   def exists?
     ! GPGME::Key.find(:secret, keyname()).empty?
   end
@@ -32,4 +37,15 @@ Puppet::Type.type(:gpgkey).provide(:gpgme) do
     return keyname
   end
 
+
+  # If gpgme was not successfully loaded at autoload time, try to load it again
+  # upon prefetch, in case it was installed prior to this provider being
+  # pretched. If it's still not present, then this will throw an exception upon
+  # prefetch and will be propagated down the stack as necessary.
+  def self.prefetch(*args)
+    unless defined? GPGME
+      ::Gem.clear_paths
+      require 'gpgme'
+    end
+  end
 end
