@@ -16,7 +16,7 @@ define gpg::file(
 ) {
 
   if((!$content) and (!$source)) {
-    crit("gpg::file requires one of [content, source]")
+    crit("gpg::file requires one of the [content, source] parameters defined")
   }
 
   require gpg::file::setup
