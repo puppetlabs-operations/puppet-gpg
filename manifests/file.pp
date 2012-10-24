@@ -44,7 +44,7 @@ define gpg::file(
     # the decryption fails, wipe the file and fail so that the `creates`
     # parameter doesn't jam the works.
     exec { "decrypt ${crypt_filepath}":
-      command   => "(gpg --quiet --decrypt '${crypt_filepath}') || (rm -f '${stage_filepath}'; /bin/false)",
+      command   => "(gpg --output '${stage_filepath}' --decrypt '${crypt_filepath}') || (rm -f '${stage_filepath}'; /bin/false)",
       path      => '/usr/bin:/usr/local/bin',
       user      => 0,
       group     => 0,
@@ -57,11 +57,13 @@ define gpg::file(
   }
 
   # If the file should be absent, wipe the staged file. If it should be
-  # present, manage the file so that it isn't wiped.
+  # present, manage the file so that it isn't wiped. Manage this file
+  # after the exec has run so that it doesn't create a zero length file.
   file { $stage_filepath:
-    owner  => 0,
-    group  => 0,
-    mode   => '0600',
+    owner   => 0,
+    group   => 0,
+    mode    => '0600',
+    require => Exec["decrypt ${crypt_filepath}"],
   }
 
   file { $name:
