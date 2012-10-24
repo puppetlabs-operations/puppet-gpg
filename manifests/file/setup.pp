@@ -13,12 +13,7 @@ class gpg::file::setup($gpgdir = undef) {
     default => $gpgdir,
   }
 
-  # Encrypted files are cached here
-  $cryptdir = "${gpgdir_real}/crypt"
-  # Decrypted files ready for staging are kept here
-  $stagedir = "${gpgdir_real}/stage"
-
-  file { [$gpgdir_real, $cryptdir, $stagedir]:
+  file { $gpgdir_real:
     ensure  => directory,
     owner   => 0,
     group   => 0,

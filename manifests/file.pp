@@ -22,8 +22,7 @@ define gpg::file(
   require gpg::file::setup
 
   $temp_filename  = regsubst($name, '/', '_', 'G')
-  $crypt_filepath = "${gpg::file::setup::cryptdir}/${temp_filename}.gpg"
-  $stage_filepath = "${gpg::file::setup::stagedir}/${temp_filename}"
+  $crypt_filepath = "${gpg::file::setup::gpgdir_real}/${temp_filename}.gpg"
 
   # Use secure file settings
   File {
@@ -44,35 +43,21 @@ define gpg::file(
     # the decryption fails, wipe the file and fail so that the `creates`
     # parameter doesn't jam the works.
     exec { "decrypt ${crypt_filepath}":
-      command   => "(gpg --output '${stage_filepath}' --decrypt '${crypt_filepath}') || (rm -f '${stage_filepath}'; /bin/false)",
+      command   => "(gpg --output '${name}' --decrypt '${crypt_filepath}') || (rm -f '${name}'; /bin/false)",
       path      => '/usr/bin:/usr/local/bin',
       user      => 0,
       group     => 0,
-      unless    => "test -s '${stage_filepath}'",
+      unless    => "test -s '${name}'",
       logoutput => true,
       provider  => shell,
       subscribe => File[$crypt_filepath],
-      before    => [
-        File[$name],
-        File[$stage_filepath],
-      ],
+      before    => File[$name],
     }
   }
 
-  # If the file should be absent, wipe the staged file. If it should be
-  # present, manage the file so that it isn't wiped. Manage this file
-  # after the exec has run so that it doesn't create a zero length file.
-  file { $stage_filepath:
-    owner   => 0,
-    group   => 0,
-    mode    => '0600',
-  }
-
   file { $name:
-    ensure => $ensure,
-    source => $stage_filepath,
-    owner  => $owner,
-    group  => $group,
-    mode   => $mode,
+    owner   => $owner,
+    group   => $group,
+    mode    => $mode,
   }
 }
