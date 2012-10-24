@@ -42,13 +42,13 @@ define gpg::file(
     # If the file should be present, decrypt the file and cache the output. If
     # the decryption fails, wipe the file and fail so that the `creates`
     # parameter doesn't jam the works.
-    exec { "decrypt ${crypt_filepath}":
+    exec { "decrypt ${name}":
       command   => "(gpg --output '${name}' --decrypt '${crypt_filepath}') || (rm -f '${name}'; /bin/false)",
       path      => '/usr/bin:/usr/local/bin',
       user      => 0,
       group     => 0,
       unless    => "test -s '${name}'",
-      logoutput => true,
+      logoutput => on_failure,
       provider  => shell,
       subscribe => File[$crypt_filepath],
       before    => File[$name],
