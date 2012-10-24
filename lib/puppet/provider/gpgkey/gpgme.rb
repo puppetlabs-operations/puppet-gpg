@@ -10,19 +10,21 @@ Puppet::Type.type(:gpgkey).provide(:gpgme) do
   end
 
   def create
-    ctx = GPGME::Ctx.new
-    keydata = "<GnupgKeyParms format=\"internal\">\n"
-    keydata += "Key-Type: "       +@resource.value(:keytype)+"\n"
-    keydata += "Key-Length: "     +@resource.value(:keylength)+"\n"
-    keydata += "Subkey-Type: "    +@resource.value(:subkeytype)+"\n"
-    keydata += "Subkey-Length: "  +@resource.value(:subkeylength)+"\n"
-    keydata += "Name-Real: "      +@resource.value(:name)+"\n"
-    keydata += "Name-Comment: "   +keyname()+"\n"
-    keydata += "Name-Email: "     +@resource.value(:email)+"\n"
-    keydata += "Expire-Date: "    +@resource.value(:expire)+"\n"
-    keydata += "</GnupgKeyParms>\n"
+    Puppet.debug "Creating a new GPG key; this could take as long as 5 minutes"
+    ctx = GPGME::Ctx.new do |ctx|
+      keydata = "<GnupgKeyParms format=\"internal\">\n"
+      keydata += "Key-Type: "       +@resource.value(:keytype)+"\n"
+      keydata += "Key-Length: "     +@resource.value(:keylength)+"\n"
+      keydata += "Subkey-Type: "    +@resource.value(:subkeytype)+"\n"
+      keydata += "Subkey-Length: "  +@resource.value(:subkeylength)+"\n"
+      keydata += "Name-Real: "      +@resource.value(:name)+"\n"
+      keydata += "Name-Comment: "   +keyname()+"\n"
+      keydata += "Name-Email: "     +@resource.value(:email)+"\n"
+      keydata += "Expire-Date: "    +@resource.value(:expire)+"\n"
+      keydata += "</GnupgKeyParms>\n"
 
-    ctx.genkey(keydata, nil, nil)
+      ctx.genkey(keydata, nil, nil)
+    end
   end
 
   def destroy
