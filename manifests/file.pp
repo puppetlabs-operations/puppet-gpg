@@ -48,7 +48,7 @@ define gpg::file(
       path      => '/usr/bin:/usr/local/bin',
       user      => 0,
       group     => 0,
-      creates   => $stage_filepath,
+      unless    => "test -s '${stage_filepath}'",
       logoutput => true,
       subscribe => File[$crypt_filepath],
       before    => File[$name],
