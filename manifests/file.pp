@@ -44,7 +44,7 @@ define gpg::file(
     # the decryption fails, wipe the file and fail so that the `creates`
     # parameter doesn't jam the works.
     exec { "decrypt ${crypt_filepath}":
-      command   => "gpg --output '${stage_filepath}' --decrypt '${crypt_filepath}' || (rm -f '${stage_filepath}'; /bin/false)",
+      command   => "gpg --quiet --decrypt '${crypt_filepath}' > '${stage_filepath}' || (rm -f '${stage_filepath}'; /bin/false)",
       path      => '/usr/bin:/usr/local/bin',
       user      => 0,
       group     => 0,
