@@ -15,7 +15,7 @@ define gpg::file(
   $mode    = undef,
 ) {
 
-  if((!$content) and (!$source)) {
+  if (!$content and !$source) or ($content and $source) {
     crit("gpg::file requires one of the [content, source] parameters defined")
   }
 
