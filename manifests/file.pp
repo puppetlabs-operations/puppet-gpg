@@ -50,9 +50,12 @@ define gpg::file(
       group     => 0,
       unless    => "test -s '${stage_filepath}'",
       logoutput => true,
-      subscribe => File[$crypt_filepath],
-      before    => File[$name],
       provider  => shell,
+      subscribe => File[$crypt_filepath],
+      before    => [
+        File[$name],
+        File[$stage_filepath],
+      ],
     }
   }
 
@@ -63,7 +66,6 @@ define gpg::file(
     owner   => 0,
     group   => 0,
     mode    => '0600',
-    require => Exec["decrypt ${crypt_filepath}"],
   }
 
   file { $name:
