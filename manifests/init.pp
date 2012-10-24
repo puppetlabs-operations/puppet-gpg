@@ -14,8 +14,8 @@
 #    ensure    => 'present',
 #    email     => 'puppet@localhost',
 #    }
-#    
-#  
+#
+#
 #
 # === Authors
 #
