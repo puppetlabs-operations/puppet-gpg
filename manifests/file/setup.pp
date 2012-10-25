@@ -6,7 +6,10 @@
 #
 #   * puppetlabs-stdlib for the `puppet_vardir` fact
 #
-class gpg::file::setup($gpgdir = undef) {
+class gpg::file::setup(
+  $gpgdir       = undef,
+  $purge_gpgdir = true,
+) {
 
   $gpgdir_real = $gpgdir ? {
     undef   => "${puppet_vardir}/gpg",
@@ -18,7 +21,8 @@ class gpg::file::setup($gpgdir = undef) {
     owner   => 0,
     group   => 0,
     mode    => '0700',
-    purge   => true,
+    purge   => $purge_gpgdir,
+    force   => true,
     recurse => true,
     backup  => false,
   }
