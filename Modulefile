@@ -1,4 +1,3 @@
-=======
 name    'ploperations-gpg'
 version '0.0.1'
 source 'https://github.com/puppetlabs-operations/puppet-gpg'
