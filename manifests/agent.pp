@@ -22,9 +22,9 @@ define gpg::agent ($ensure='present', $outfile = '', $options = []) {
 
   $command = inline_template('<%= "gpg-agent --allow-preset-passphrase --write-env-file #{gpg_agent_info} --daemon #{options.join(\' \').gsub(/\s+/, \' \')}" %>')
 
-  case $ensure { 
+  case $ensure {
     present: {
-      exec { "gpg-agent":
+      exec { "gpg-agent for ${name}":
         path    => "/usr/bin:/bin:/usr/sbin:/sbin",
         command => "su - $name -c '$command'",
         unless  => "ps -U ${name} -o args | grep -v grep | grep gpg-agent",
@@ -32,7 +32,7 @@ define gpg::agent ($ensure='present', $outfile = '', $options = []) {
       }
     }
     absent: {
-      exec { "kill gpg-agent":
+      exec { "kill gpg-agent for ${name}":
         user    => $name,
         path    => "/usr/bin:/bin:/usr/sbin:/sbin",
         command => "ps -U ${name} -eo pid,args | grep -v grep | grep gpg-agent | xargs kill",
