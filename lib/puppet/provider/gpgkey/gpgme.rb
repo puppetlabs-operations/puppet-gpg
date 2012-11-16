@@ -1,7 +1,7 @@
 begin
   require 'gpgme'
 rescue LoadError => e
-  Puppet.warning "Error while loading #{__FILE__}: #{e}; deferring require"
+  Puppet.debug "Error while loading #{__FILE__}: #{e}; deferring require"
 end
 
 Puppet::Type.type(:gpgkey).provide(:gpgme) do
