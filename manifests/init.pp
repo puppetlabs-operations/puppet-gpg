@@ -25,24 +25,10 @@
 #
 # Copyright 2012 Craig Dunn
 #
-class gpg (
-  $packagename  = 'gnupg2',
-  $gpgme_provider = 'gem'
-) {
-
-  include ruby::dev
+class gpg ($packagename  = 'gnupg2') {
 
   package { 'gnupg':
     name    => $packagename,
     ensure  => 'installed',
-  }
-
-  package { 'gpgme':
-    ensure    => 'installed',
-    provider  => $gpgme_provider,
-    require   => [
-      Package['gnupg'],
-      Class['ruby::dev'],
-    ]
   }
 }
