@@ -49,7 +49,7 @@ Puppet::Type.type(:gpgkey).provide(:gpgme) do
       ::Gem.clear_paths
       require 'gpgme'
     end
-  rescue => e
-    Puppet.error "Unable to perform deferred require of 'gpgme' gem; #{e.message}"
+  rescue LoadError => e
+    Puppet.warning "Unable to perform deferred require of 'gpgme'; #{e.message}"
   end
 end
