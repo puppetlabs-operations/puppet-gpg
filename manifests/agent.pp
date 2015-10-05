@@ -28,8 +28,24 @@ define gpg::agent (
     $gpg_agent_info = $outfile
   }
 
-  $command            = inline_template('<%= "gpg-agent --allow-preset-passphrase --write-env-file #{gpg_agent_info} --daemon #{options.join(\' \').gsub(/\s+/, \' \')}" %>')
-  $preload_passphrase = "/usr/lib/gnupg2/gpg-preset-passphrase -v --passphrase ${gpg_passphrase} --preset ${gpg_key_grip}"
+  $command = join(
+    [
+      'gpg-agent',
+      '--allow-preset-passphrase',
+      '--write-env-file',
+      $gpg_agent_info,
+      '--daemon',
+      join($options, ' ')
+    ], ' ')
+
+  $preload_passphrase = join(
+    [
+      '/usr/lib/gnupg2/gpg-preset-passphrase -v',
+      '--passphrase',
+      $gpg_passphrase,
+      '--preset',
+      $gpg_key_grip
+    ], ' ')
 
   Exec {
     path => $path,
