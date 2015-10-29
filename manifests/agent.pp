@@ -11,7 +11,7 @@
 #
 define gpg::agent (
   $ensure         = present,
-  $outfile        = '',
+  $outfile        = "/home/${name}/.gpg-agent-info",
   $path           = '/usr/bin:/bin:/usr/sbin:/sbin',
   $options        = [],
   $gpg_passphrase = undef,
@@ -21,19 +21,12 @@ define gpg::agent (
 
   require gpg
 
-  if $outfile == '' {
-    $gpg_agent_info = "/home/${name}/.gpg-agent-info"
-  }
-  else {
-    $gpg_agent_info = $outfile
-  }
-
   $command = join(
     [
       'gpg-agent',
       '--allow-preset-passphrase',
       '--write-env-file',
-      $gpg_agent_info,
+      $outfile,
       '--daemon',
       join($options, ' ')
     ], ' ')
