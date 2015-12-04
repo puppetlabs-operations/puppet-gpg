@@ -16,7 +16,8 @@ define gpg::agent (
   $options        = [],
   $gpg_passphrase = undef,
   $gpg_key_grip   = undef,
-  $user           = $name
+  $user           = $name,
+  $manage_pkg     = true
 ) {
 
   require gpg
@@ -25,6 +26,10 @@ define gpg::agent (
 
   case $ensure {
     present: {
+      if $manage_pkg {
+        include ::gpg::install
+      }
+
       exec { "gpg-agent for ${name}":
         path      => $path,
         user      => $user,
@@ -39,6 +44,7 @@ define gpg::agent (
           join($options, ' ')
         ], ' ')
       }
+
       if $gpg_passphrase {
         exec { "set gpg-agent ${name} passphrase":
           path        => $path,
@@ -56,6 +62,7 @@ define gpg::agent (
         }
       }
     }
+
     absent: {
       exec { "kill gpg-agent for ${name}":
         path    => $path,
@@ -64,6 +71,7 @@ define gpg::agent (
         onlyif  => $check_for_agent,
       }
     }
+
     default: {
       fail("Undefined ensure parameter \"${ensure}\" for gpg::agent")
     }
